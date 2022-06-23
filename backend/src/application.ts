@@ -3,6 +3,8 @@ import RouterList from "./routes/route.list";
 import config from "config"
 import logger from "./log";
 import error_middleware from "./middlewares/error.middleware";
+import morgan from "morgan"
+import DB from "./db";
 
 const base_path: string = config.get<string>("api_path");
 class App {
@@ -14,16 +16,23 @@ class App {
     this.port = port;
     this.plugins();
     this.init_error_handler();
+    this.initialize_database()
     this.routes();
   }
 
   protected plugins(): void {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(morgan("dev"))
   }
 
   protected init_error_handler(): void {
     this.app.use(error_middleware)
+  }
+
+  protected async initialize_database(): Promise<void> {
+    const dbs = new DB();
+    await dbs.connection()
   }
 
   protected routes(): void {

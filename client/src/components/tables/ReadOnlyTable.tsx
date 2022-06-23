@@ -4,11 +4,11 @@ import platform from "platform";
 
 interface ReadOnlyTableProps {
   data?: Array<any>;
-  toolbar?: Array<any>;
-  headerComponent?: React.ReactNode;
+  enableFilter?: boolean;
+  extraFilter?: boolean;
 }
 
-const ReadOnlyTable: React.FC<ReadOnlyTableProps> = ({ data, toolbar, headerComponent }) => {
+const ReadOnlyTable: React.FC<ReadOnlyTableProps> = ({ data, enableFilter, extraFilter }) => {
   const [browser, setBrowser] = useState<any>("");
   const [dummyData, setDummyData] = useState<Array<any>>([]);
   useEffect(() => {
@@ -26,10 +26,14 @@ const ReadOnlyTable: React.FC<ReadOnlyTableProps> = ({ data, toolbar, headerComp
   const popUpRef = useRef<HTMLDivElement>(null);
   const [enablePopUp, setEnablePopUp] = useState<boolean>(false);
   const [popUpPosition, setPopUpPosition] = useState<{ left?: number; top?: number }>({});
+
+  const extraRef = useRef<HTMLButtonElement>(null);
   const PopUpHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     setEnablePopUp(!enablePopUp);
-    let rect = e.currentTarget.getBoundingClientRect();
-    setPopUpPosition({ left: rect.width + rect.left, top: rect.top });
+    if (extraRef.current) {
+      let rect = extraRef.current.getBoundingClientRect();
+      setPopUpPosition({ left: rect.x + rect.width, top: rect.y });
+    }
   };
   useEffect(() => {
     const closepopup = (e: any) => {
@@ -46,16 +50,20 @@ const ReadOnlyTable: React.FC<ReadOnlyTableProps> = ({ data, toolbar, headerComp
     <Wrapper>
       <ToolbarWrapper>
         <FilterText type="text" />
-        <PopUpWrapper>
-          <PopUpButton onClick={PopUpHandler}>more...</PopUpButton>
-          {enablePopUp && (
-            <PopUpBoxConatainer ref={popUpRef} left={popUpPosition.left} top={popUpPosition.top}>
-              <InnerPopUpContainer>
-                <PopUpInner></PopUpInner>
-              </InnerPopUpContainer>
-            </PopUpBoxConatainer>
-          )}
-        </PopUpWrapper>
+        { extraFilter &&
+          <PopUpWrapper>
+            <PopUpButton onClick={PopUpHandler} ref={extraRef}>
+              more...
+            </PopUpButton>
+            {enablePopUp && (
+              <PopUpBoxConatainer ref={popUpRef} left={popUpPosition.left} top={popUpPosition.top}>
+                <InnerPopUpContainer>
+                  <PopUpInner></PopUpInner>
+                </InnerPopUpContainer>
+              </PopUpBoxConatainer>
+            )}
+          </PopUpWrapper>
+        }
       </ToolbarWrapper>
       <HeaderWrapper>
         {[1, 2, 3].map((item, index) => (
@@ -147,12 +155,7 @@ const TextCell = styled.span<{
   ml?: number;
   fontSize?: string;
 }>`
-  ${(props) =>
-    props.textAlign === "left"
-      ? "text-align: left;"
-      : props.textAlign === "right"
-      ? "text-align: right;"
-      : "text-align: center;"}
+  ${(props) => (props.textAlign === "left" ? "text-align: left;" : props.textAlign === "right" ? "text-align: right;" : "text-align: center;")}
   ${(props) => (props.fontSize ? "font-size: " + props.fontSize + ";" : "font-size: 0.7rem;")}
   ${(props) => props.ml && props.mr && "width: calc(100% - " + (props.ml + props.mr) + "px);"}
   ${(props) => (props.noBold ? "" : "font-weight: bold;")}
@@ -194,6 +197,7 @@ const PopUpButton = styled.button`
   // font-family: "Arial Narrow", Arial, sans-serif;
   font-size: 0.7rem;
   height: 100%;
+  margin-right: 4px;
   outline: none;
   border: none;
   background: #ddd;
@@ -211,7 +215,8 @@ const PopUpBoxConatainer = styled.div<{ left?: number; top?: number }>`
   ${(props) => props.left && "left: " + props.left + "px;"}
   ${(props) => props.top && "top: " + props.top + "px;"}
   position: fixed;
-  z-index: 10;
+  margin-left: 6px;
+  z-index: 20;
 `;
 
 const InnerPopUpContainer = styled.div`
@@ -256,6 +261,6 @@ const PopUpInner = styled.div`
   flex-direction: column;
   margin-top: -10px;
   margin-left: 6px;
-  box-shadow: 0 0.46875rem 2.1875rem rgb(4 9 20 / 3%), 0 0.9375rem 1.40625rem rgb(4 9 20 / 3%),
-    0 0.25rem 0.53125rem rgb(4 9 20 / 5%), 0 0.125rem 0.1875rem rgb(4 9 20 / 3%);
+  box-shadow: 0 0.46875rem 2.1875rem rgb(4 9 20 / 3%), 0 0.9375rem 1.40625rem rgb(4 9 20 / 3%), 0 0.25rem 0.53125rem rgb(4 9 20 / 5%),
+    0 0.125rem 0.1875rem rgb(4 9 20 / 3%);
 `;

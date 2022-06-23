@@ -1,7 +1,7 @@
 import App from "./application";
 import dotenv from "dotenv";
-import config from "config";
 dotenv.config();
+import config from "config";
 
 const port = config.get<number>("port");
 const server = new App(port);
