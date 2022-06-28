@@ -5,7 +5,7 @@ import Form from "../../components/Form";
 import GroupButton from "../../components/GroupButton";
 import ReadOnlyTable from "../../components/tables/ReadOnlyTable";
 import { Column, Row } from "../../utils/styled.global";
-import { DecimalInput, NumberInput, TextInput, DropdownInput,CheckListInput, WindowPopUpInput } from "../../components/inputs";
+import { DecimalInput, NumberInput, TextInput, DropdownInput,CheckListInput, WindowPopUpInput, DefaultCheckInput } from "../../components/inputs";
 import { PrivOpt } from "../../utils/dummy.data";
 
 interface TableViewProps {}
@@ -21,7 +21,7 @@ const TableView: React.FC<TableViewProps> = () => {
     // }
   };
 
-  const OptionsHandler = (e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>, data: any) => {
+  const OptionsHandler = (e: React.MouseEvent<HTMLButtonElement>, data: any) => {
     console.log(data)
   }
   return (
@@ -33,7 +33,7 @@ const TableView: React.FC<TableViewProps> = () => {
       </Column>
       <Column flex disp="flex" flexDir="column" gap={10}>
         <Column minHeight={150} maxHeight={250}>
-          <CustomGrid headerComponent={<h4 style={{ textAlign: "center" }}>Form 1</h4>} menuComponent={<GroupButton />}>
+          <CustomGrid headerComponent={<h4 style={{ textAlign: "center" }}>Form 1</h4>} menuComponent={<GroupButton buttonList={"all"}/>}>
             <Form flexDir="column" gap={10}>
               <Row disp="flex" flexDir="row" gap={15}>
                 <TextInput width={120} label="Reff No." onChange={ChangeHandler} auto />
@@ -44,7 +44,7 @@ const TableView: React.FC<TableViewProps> = () => {
               </Row>
               <Row disp="flex" flexDir="row" gap={15}>
                 <TextInput width={200} label="Reff No." onChange={ChangeHandler} auto />
-                <TextInput width={150} label="ID" onChange={ChangeHandler} />
+                <DefaultCheckInput label="Public" onChange={ChangeHandler} />
                 <DecimalInput width={140} label="Qty" onChange={ChangeHandler} value={12345678.2677} unit="liter" digits={2} />
                 <DropdownInput width={150} label="Genre" />
                 <CheckListInput width={150} label="Priviledge" options={PrivOpt} CustomHandler={OptionsHandler}/>
@@ -53,7 +53,7 @@ const TableView: React.FC<TableViewProps> = () => {
           </CustomGrid>
         </Column>
         <Column flex>
-          <CustomGrid headerComponent={<h4 style={{ textAlign: "left" }}>Detail</h4>} menuComponent={<GroupButton />}></CustomGrid>
+          <CustomGrid headerComponent={<h4 style={{ textAlign: "left" }}>Detail</h4>} menuComponent={<GroupButton buttonList={"all"}/>}></CustomGrid>
         </Column>
       </Column>
     </Wrapper>

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { FaHome, FaBell, FaUserAlt, FaBars, FaBox, FaChevronDown, FaColumns } from "react-icons/fa";
+import { FaHome, FaBell, FaUserAlt, FaBars, FaBox, FaChevronDown, FaColumns, FaAddressBook } from "react-icons/fa";
 
 interface NavBarProps {
   navHandler?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  height?: number
+  height?: number;
 }
 
 const Icons: React.FC<{ icon: string }> = ({ icon }) => {
@@ -31,6 +31,12 @@ const Icons: React.FC<{ icon: string }> = ({ icon }) => {
       return (
         <NavMenuIcon>
           <FaColumns />
+        </NavMenuIcon>
+      );
+    case "book":
+      return (
+        <NavMenuIcon>
+          <FaAddressBook />
         </NavMenuIcon>
       );
     default:
@@ -106,6 +112,7 @@ const NavBar: React.FC<NavBarProps> = ({ navHandler, height }) => {
                     <MenuWrapper desc="Home" icon="home" id="home" onClickHandler={navHandler} />
                     <MenuWrapper desc="Layout" icon="box" id="layout" onClickHandler={navHandler} />
                     <MenuWrapper desc="Tabel" icon="column" id="tableview" onClickHandler={navHandler} />
+                    <MenuWrapper desc="Documentation" icon="book" id="documentation" onClickHandler={navHandler} />
                   </VerticalNavMenuUl>
                 </InnerWrapperMainMenu>
               </WrapperMainMenu>
@@ -173,8 +180,8 @@ const WrapperSizing = styled.div<{ height?: number }>`
 
 const Wrapper = styled(WrapperSizing)`
   background: #fafbfc;
-  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03),
-    0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05),
+    0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
 `;
 
 const AppHeader = styled.div`
@@ -313,8 +320,8 @@ const MainMenuPopUpContainer = styled.div`
   left: 0;
   top: 100%;
   background: #fafbfc;
-  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03),
-    0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05),
+    0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
   z-index: 1;
   transform-origin: center left;
   animation: ${dropleft} 0.2s;

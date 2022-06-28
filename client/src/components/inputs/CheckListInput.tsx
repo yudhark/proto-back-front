@@ -1,39 +1,52 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { FaEraser } from "react-icons/fa";
+import { FaEraser, FaCheck } from "react-icons/fa";
 
 type DataType = {
   id: any;
   desc: string;
-  checked: boolean;
 };
+
 interface CheckListInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   width?: number;
   label?: string;
   options?: Array<DataType>;
-  CustomHandler?: (e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>, data: Array<DataType>) => void;
+  customValue?: Array<any>;
+  CustomHandler?: (e: React.MouseEvent<HTMLButtonElement>, data: Array<DataType>) => void;
 }
 
 interface CheckItemProps {
-  data: DataType;
+  item: DataType;
   index: number;
+  value?: boolean;
   CustomHandler?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const CheckItem: React.FC<CheckItemProps> = ({ data, CustomHandler, index }) => {
+const CheckItem: React.FC<CheckItemProps> = ({ item, CustomHandler, index, value: localValue }) => {
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.currentTarget.checked);
+    CustomHandler && CustomHandler(e);
+  };
+
+  useEffect(() => {
+    if (localValue) setIsChecked(localValue);
+  }, [localValue]);
+
   return (
-    <ContentRow id={data.id.toString()} key={index} title="Chcek To Add">
+    <ContentRow id={item.id.toString()} title="Chcek To Add">
       <OptionColumn>
-        <CheckBox id={data.id} onChange={CustomHandler} />
+        <CheckBox id={item.desc} value={index} name={item.id} checked={isChecked} onChange={changeHandler} />
       </OptionColumn>
       <OptionColumn flex>
-        <TextSpan>{data.desc}</TextSpan>
+        <TextSpan>{item.desc}</TextSpan>
       </OptionColumn>
     </ContentRow>
   );
 };
 
-const CheckListInput: React.FC<CheckListInputProps> = ({ width, label, options, CustomHandler, ...rest }) => {
+const CheckListInput: React.FC<CheckListInputProps> = ({ width, label, options, CustomHandler, customValue, ...rest }) => {
   const [columnRect, setColumnRect] = useState<{ width: number; top: number; left: number }>({ width: 0, top: 0, left: 0 });
   const ColumnReff = useRef<HTMLDivElement>(null);
   const PopUpReff = useRef<HTMLDivElement>(null);
@@ -62,8 +75,11 @@ const CheckListInput: React.FC<CheckListInputProps> = ({ width, label, options, 
       document.removeEventListener("mousedown", closePopUp);
     };
   }, []);
+  // end of line view configuration
 
+  // begin of data manipulation
   const [initOptions, setInitOptions] = useState<Array<DataType>>([]);
+  const [selectedTemp, setSelectedTemp] = useState<Array<DataType>>([]);
 
   useEffect(() => {
     if (options) {
@@ -71,39 +87,70 @@ const CheckListInput: React.FC<CheckListInputProps> = ({ width, label, options, 
     }
   }, [options]);
 
-  const [viewChecked, setViewChecked] = useState<string>("");
+  const dispatchArray = useCallback(() => {
+    let newValue: Array<DataType> = [];
+    if (customValue && options) {
+      customValue.forEach((item: any) => {
+        let index = options.findIndex((opt) => {
+          if (typeof opt.id === "number" && typeof item === "string") return opt.id === Number(item);
+          else if (typeof opt.id === "string" && typeof item === "number") return opt.id === item.toString();
+          else return opt.id === item;
+        });
+        if (index >= 0) newValue.push({ id: options[index].id, desc: options[index].desc });
+      });
+    }
+    return newValue;
+  }, [customValue, options]);
+
+  useEffect(() => {
+    let newValue: Array<DataType> = [];
+    newValue = dispatchArray();
+    setSelectedTemp(newValue);
+    setSelected(newValue.map((item) => item.desc).join("/"));
+  }, [dispatchArray]);
 
   const ChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let key = e.currentTarget.id;
-    let index = initOptions.findIndex((item) => {
-      if (typeof item.id === "number") return item.id === Number(key);
-      else if (typeof item.id === "string") return item.id === key;
-      else return -1;
-    });
-    initOptions[index].checked = e.currentTarget.checked;
-    setInitOptions(initOptions);
-    setViewChecked(
-      initOptions
-        .filter((item) => item.checked === true)
-        .map((item) => item.desc)
-        .join("/")
-    );
-    CustomHandler && CustomHandler(e, initOptions);
+    let { id, name, checked } = e.currentTarget;
+    let tempArr = selectedTemp;
+    if (checked === true) {
+      if (tempArr.map((item) => item.id).includes(id) === false) {
+        tempArr.push({ id: id, desc: name });
+      }
+    } else {
+      if (tempArr.map((item) => item.id).includes(id) === true) {
+        let index = tempArr.findIndex((item) => {
+          if (typeof item.id === "number") return item.id === Number(id);
+          else return item.id === id;
+        });
+        tempArr.splice(index, 1);
+      }
+    }
+    setSelectedTemp(tempArr);
+  };
+
+  const [selected, setSelected] = useState<string>();
+  const SubmitHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setSelected(selectedTemp.map((item) => item.desc).join("/"));
+    CustomHandler && CustomHandler(e, selectedTemp);
+    setPopUpEnable(false);
   };
 
   const ResetHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    let newOpt: Array<DataType> = [];
-    initOptions.forEach((item) => {
-      newOpt.push({ id: item.id, desc: item.desc, checked: false });
-    });
-    setViewChecked(
-      newOpt
-        .filter((item) => item.checked === true)
-        .map((item) => item.desc)
-        .join("/")
-    );
-    setInitOptions(newOpt);
-    CustomHandler && CustomHandler(e, []);
+    e.preventDefault();
+    let resetValue = [];
+    if (customValue) {
+      if (customValue.length > 0) {
+        resetValue = dispatchArray();
+        setSelectedTemp(resetValue);
+        setSelected(resetValue.map((item) => item.desc).join("/"));
+        CustomHandler && CustomHandler(e, resetValue);
+      }
+    } else {
+      setSelectedTemp([]);
+      setSelected("");
+      CustomHandler && CustomHandler(e, []);
+    }
   };
 
   return (
@@ -113,7 +160,12 @@ const CheckListInput: React.FC<CheckListInputProps> = ({ width, label, options, 
       </Column>
       <Column flex ref={ColumnReff} gap={4}>
         <input type="hidden" name="localId" />
-        <Input type="text" readOnly onFocus={PopUpHandler} defaultValue={viewChecked} />
+        {rest.readOnly ? (
+          <Input type="text" readOnly onFocus={PopUpHandler} defaultValue={customValue?.map(item=>item.desc).join("/")} />
+        ) : (
+          <Input type="text" readOnly onFocus={PopUpHandler} defaultValue={selected} />
+        )}
+
         {!rest.readOnly && popUpEnable && (
           <PopUpWrapper width={columnRect.width} top={columnRect.top} left={columnRect.left} ref={PopUpReff}>
             <InnerWrapper>
@@ -121,17 +173,27 @@ const CheckListInput: React.FC<CheckListInputProps> = ({ width, label, options, 
                 <Input type="text" placeholder="keyword" />
               </HeaderPopUp>
               <BodyPopUp>
-                {initOptions && initOptions.map((item, index) => <CheckItem key={index} index={index} data={item} CustomHandler={ChangeHandler} />)}
+                {initOptions &&
+                  initOptions.map((item, index) => (
+                    <CheckItem
+                      key={index}
+                      item={item}
+                      index={index}
+                      CustomHandler={ChangeHandler}
+                      value={selectedTemp.map((val) => val.desc).includes(item.desc) ? true : false}
+                    />
+                  ))}
               </BodyPopUp>
+              <Column gap={4} centerized>
+                <ButtonSubmit name={rest.name} onClick={SubmitHandler}>
+                  <FaCheck />
+                </ButtonSubmit>
+                <ButtonSubmit title="reset" onClick={ResetHandler}>
+                  <FaEraser />
+                </ButtonSubmit>
+              </Column>
             </InnerWrapper>
           </PopUpWrapper>
-        )}
-        {!rest.readOnly && (
-          <Column centerized>
-            <ResetButton title="reset" onClick={ResetHandler}>
-              <FaEraser />
-            </ResetButton>
-          </Column>
         )}
       </Column>
     </Wrapper>
@@ -158,13 +220,14 @@ const Wrapper = styled.div<{ width?: number; active?: boolean }>`
   align-items: center;
 `;
 
-const Column = styled.div<{ flex?: boolean; centerized?: boolean; gap?: number }>`
+const Column = styled.div<{ flex?: boolean; centerized?: boolean; gap?: number; flexDir?: "column" | "row" }>`
   ${(props) => props.flex && "flex: 1;"}
   display: flex;
   font-size: 0.72rem;
   position: relative;
   ${(props) => props.gap && "gap: " + props.gap + "px;"}
   ${(props) => props.centerized && "justify-content: center; align-items: center;"}
+  ${(props) => props.flexDir && "flex-direction: " + props.flexDir + ";"}
 `;
 
 const Input = styled.input`
@@ -215,6 +278,8 @@ const HeaderPopUp = styled.div`
   display: flex;
   font-size: 0.72rem;
   position: relative;
+  justify-content: center;
+  align-items: center;
 `;
 
 const BodyPopUp = styled.ul`
@@ -287,17 +352,18 @@ const TextSpan = styled.span`
   width: 100%;
 `;
 
-const ResetButton = styled.button`
-  border: none;
-  outline: none;
-  font-size: 0.68rem;
-  background: #ddd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 3px 6px;
-  &:hover {
-    background: #b8b8b8;
-    cursor: pointer;
-  }
+const ButtonSubmit = styled.button`
+display: flex;
+flex: 1;
+justify-content: center;
+align-items: center;
+background: #ddd;
+border: none;
+ouline none;
+padding: 2px 6px;
+&:hover {
+  cursor: pointer;
+  color: white;
+  background: #5e5e5e;
+}
 `;

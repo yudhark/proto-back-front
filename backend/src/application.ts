@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import cors, {CorsOptions} from "cors"
 import RouterList from "./routes/route.list";
 import config from "config"
 import logger from "./log";
@@ -7,6 +8,7 @@ import morgan from "morgan"
 import DB from "./db";
 
 const base_path: string = config.get<string>("api_path");
+const cors_options = config.get<CorsOptions>("cors")
 class App {
   private app: Application;
   private port: number;
@@ -23,6 +25,7 @@ class App {
   protected plugins(): void {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cors({origin: "*"}))
     this.app.use(morgan("dev"))
   }
 

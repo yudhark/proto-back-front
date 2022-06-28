@@ -3,4 +3,7 @@ export { default as NumberInput } from "./NumberInput";
 export { default as DecimalInput } from "./DecimalInput";
 export { default as DropdownInput } from "./DropdownInput";
 export { default as CheckListInput } from "./CheckListInput";
-export {default as WindowPopUpInput} from "./WindowPopUpInput";
+export { default as WindowPopUpInput } from "./WindowPopUpInput";
+export { default as DefaultCheckInput } from "./DefaultCheck";
+export { default as InlineCheckInput } from "./InlineCheckInput";
+export { default as RangeDateInput } from "./RangeDateInput";

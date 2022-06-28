@@ -45,8 +45,12 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ width, label, options, ..
 
   const LocalDoubleClick = (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
-    rest.onDoubleClick && rest.onDoubleClick(e);
+    if (rest.onDoubleClick) {
+      rest.name && (e.currentTarget.name = rest.name);
+      rest.onDoubleClick(e);
+    }
     setLocalValue({ id: e.currentTarget.id, desc: e.currentTarget.value });
+    setPopUpEnable(false);
   };
 
   const ResetHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -67,19 +71,17 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ width, label, options, ..
                 <Input type="text" placeholder="keyword" />
               </HeaderPopUp>
               <BodyPopUp>
-                {[
-                  { id: 0, desc: "Pria" },
-                  { id: 1, desc: "Wanita" },
-                ].map((item, index) => (
-                  <ContentRow
-                    type="button"
-                    key={index}
-                    id={item.id.toString()}
-                    onDoubleClick={LocalDoubleClick}
-                    defaultValue={item.desc}
-                    title="Double Click To Choose"
-                  />
-                ))}
+                {options &&
+                  options.map((item, index) => (
+                    <ContentRow
+                      type="button"
+                      key={index}
+                      id={item.id.toString()}
+                      onDoubleClick={LocalDoubleClick}
+                      defaultValue={item.desc}
+                      title="Double Click To Choose"
+                    />
+                  ))}
               </BodyPopUp>
             </InnerWrapper>
           </PopUpWrapper>
@@ -106,7 +108,7 @@ const dropdown = keyframes`
 
 const Wrapper = styled.div<{ width?: number; active?: boolean }>`
   ${(props) => (props.width ? "width: " + props.width + "px;" : "flex: 1;")}
-  ${props => props.active ? "border: 1px solid #29b6f66b; box-shadow: 1px 1px 10px 1px #29b6f63b;" : "border: 1px solid rgba(4, 9, 20, 0.2);"}
+  ${(props) => (props.active ? "border: 1px solid #29b6f66b; box-shadow: 1px 1px 10px 1px #29b6f63b;" : "border: 1px solid rgba(4, 9, 20, 0.2);")}
   display: flex;
   flex-direction: row;
   gap: 5px;
@@ -205,7 +207,7 @@ const ContentRow = styled.input`
   font-weigth: bold;
   &:hover {
     color: white;
-    background: #29B6F6;
+    background: #29b6f6;
     cursor: pointer;
   }
 `;

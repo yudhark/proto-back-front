@@ -18,10 +18,10 @@ interface ApiDetailDocument {
 }
 
 export interface ApiDocument extends mongoose.Document {
-  method: string;
+  method: number;
   url: string;
   desc: string;
-  public: boolean;
+  published: boolean;
   structure: ApiDetailDocument;
   createdAt: Date;
   updatedAt: Date;
@@ -29,10 +29,10 @@ export interface ApiDocument extends mongoose.Document {
 
 const ApiSchema = new mongoose.Schema<ApiDocument>(
   {
-    method: { type: String, required: true },
+    method: { type: Number, required: true },
     url: { type: String, required: true },
     desc: { type: String },
-    public: { type: Boolean, default: true },
+    published: { type: Boolean, default: false },
     structure: {
       query: [{ name: String, desc: String }],
       params: [{ name: String, desc: String }],

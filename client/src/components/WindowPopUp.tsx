@@ -12,7 +12,7 @@ interface WindowProps {
   CloseWindow: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Window: React.FC<WindowProps> = ({ title, width, height, reference, children, CloseWindow }) => {
+const WindowPopUp: React.FC<WindowProps> = ({ title, width, height, reference, children, CloseWindow }) => {
   const [style, setStyle] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [bounds, setBounds] = useState<string>("")
   const [maximize, setMaximize] = useState<boolean>(false);
@@ -64,7 +64,7 @@ const Window: React.FC<WindowProps> = ({ title, width, height, reference, childr
     </Dragable>
   );
 };
-export default Window;
+export default WindowPopUp;
 
 const Wrapper = styled.div<{ width?: number; height?: number; maxWindow?: boolean; movable?: boolean }>`
   position: fixed;
@@ -110,6 +110,7 @@ const TitileBox = styled.div`
 `;
 const TitleText = styled.span`
   font-weight: bold;
+  font-size: .78rem;
   &:hover {
     cursor: default;
   }

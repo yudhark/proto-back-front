@@ -8,6 +8,7 @@ class ApiRoute extends BaseRoutes {
     this.router.post("/", apiController.insert_api)
     this.router.put("/", apiController.update_api)
     this.router.delete("/", apiController.delete_api)
+    this.router.get("/httpmethod", apiController.get_methods)
   }
 }
 

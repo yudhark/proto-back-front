@@ -1,50 +1,66 @@
 import React from "react";
 import styled from "styled-components";
-import { FaPrint,FaFileExcel,FaUpload,FaPlusSquare,FaEdit,FaTrashAlt } from "react-icons/fa";
+import { FaPrint, FaFileExcel, FaUpload, FaPlusSquare, FaEdit, FaTrashAlt } from "react-icons/fa";
 
-interface GroupButtonProps {}
+interface ButtonProps {
+  value: "new" | "edit" | "delete" | "print" | "excel" | "upload";
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
 
-const GroupButton: React.FC<GroupButtonProps> = () => {
+const SingleButton: React.FC<ButtonProps> = ({ value, onClick }) => {
+  return (
+    <ColumnButton>
+      <MenuButton value={value} onClick={onClick}>
+        <MenuIcon>
+          {value === "new" ? (
+            <FaPlusSquare />
+          ) : value === "edit" ? (
+            <FaEdit />
+          ) : value === "delete" ? (
+            <FaTrashAlt />
+          ) : value === "excel" ? (
+            <FaFileExcel />
+          ) : value === "print" ? (
+            <FaPrint />
+          ) : value === "upload" ? (
+            <FaUpload />
+          ) : null}
+        </MenuIcon>
+        <MenuText>
+          {value === "new"
+            ? "Add"
+            : value === "edit"
+            ? "Edit"
+            : value === "delete"
+            ? "Delete"
+            : value === "excel"
+            ? "Excel"
+            : value === "print"
+            ? "Print"
+            : value === "upload"
+            ? "Upload"
+            : ""}
+        </MenuText>
+      </MenuButton>
+    </ColumnButton>
+  );
+};
+
+interface GroupButtonProps {
+  buttonList: Array<"new" | "edit" | "delete" | "print" | "excel" | "upload"> | "all";
+  buttonHandler?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+const GroupButton: React.FC<GroupButtonProps> = ({ buttonList, buttonHandler }) => {
+  const buttonGroup: Array<"new" | "edit" | "delete" | "print" | "excel" | "upload"> = ["new", "edit", "delete", "print", "excel", "upload"];
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    buttonHandler && buttonHandler(e);
+  };
   return (
     <Wrapper>
-      <ColumnButton>
-        <MenuButton>
-          <MenuIcon>
-            <FaPrint />
-          </MenuIcon>
-          <MenuText>Print</MenuText>
-        </MenuButton>
-      </ColumnButton>
-      <ColumnButton>
-        <MenuButton>
-          <MenuIcon><FaFileExcel/></MenuIcon>
-          <MenuText>Excel</MenuText>
-        </MenuButton>
-      </ColumnButton>
-      <ColumnButton>
-        <MenuButton>
-          <MenuIcon><FaUpload/></MenuIcon>
-          <MenuText>Upload</MenuText>
-        </MenuButton>
-      </ColumnButton>
-      <ColumnButton>
-        <MenuButton>
-          <MenuIcon><FaPlusSquare/></MenuIcon>
-          <MenuText>New</MenuText>
-        </MenuButton>
-      </ColumnButton>
-      <ColumnButton>
-        <MenuButton>
-          <MenuIcon><FaEdit/></MenuIcon>
-          <MenuText>Edit</MenuText>
-        </MenuButton>
-      </ColumnButton>
-      <ColumnButton>
-        <MenuButton>
-          <MenuIcon><FaTrashAlt/></MenuIcon>
-          <MenuText>Del</MenuText>
-        </MenuButton>
-      </ColumnButton>
+      {buttonList === "all"
+        ? buttonGroup.map((item, index) => <SingleButton value={item} onClick={onClick} key={index} />)
+        : buttonList.map((item, index) => <SingleButton value={item} onClick={onClick} key={index} />)}
     </Wrapper>
   );
 };
@@ -77,9 +93,9 @@ const MenuButton = styled.button`
 `;
 
 const MenuIcon = styled.span`
-align-items: center;
-display: flex;
-justify-content: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 `;
 const MenuText = styled.span`
   font-family: "Arial Narrow", Arial, sans-serif;
