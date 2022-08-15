@@ -163,56 +163,58 @@ const SingleRow: React.FC<SingleRowProps> = ({ rows, enableFilter, headerLayout,
           <MenuWrapper width={200} disp="flex">
             <FilterText type="text" placeholder="keyword" onChange={TextFilterHandler} />
           </MenuWrapper>
-          {optionsFilterHeader.length > 0 && (
-            <MenuWrapper disp="flex" flexDir="row" gap={8}>
-              {optionsFilterHeader.map((item, index) => (
-                <CheckListInput
-                  key={index}
-                  label={item.name ? (item.name.charAt(0).toUpperCase() + item.name.slice(1)).match(/[A-Z][a-z]+/g)?.join(" ") : ""}
-                  name={item.name}
-                  options={item.value?.map((ini) => ({ id: ini, desc: ini }))}
-                  width={220}
-                  customValue={item.name && filterForm[item.name] ? filterForm[item.name].map((val: any) => val.desc) : [""]}
-                  CustomHandler={OptionsFilterHandler}
-                />
-              ))}
-            </MenuWrapper>
-          )}
-          {booleanFilterHeader.length > 0 && (
-            <MenuWrapper disp="flex" flexDir="row" gap={8}>
-              {booleanFilterHeader.map((item, index) => (
-                <CheckListInput
-                  key={index}
-                  label={item ? (item.charAt(0).toUpperCase() + item.slice(1)).match(/[A-Z][a-z]+/g)?.join(" ") : ""}
-                  name={item}
-                  width={150}
-                  options={[
-                    { id: "TRUE", desc: "TRUE" },
-                    { id: "FALSE", desc: "FALSE" },
-                  ]}
-                  customValue={item && filterForm[item] ? filterForm[item].data.map((val: any) => val.desc) : [""]}
-                  CustomHandler={BooleanFilterHandler}
-                />
-              ))}
-            </MenuWrapper>
-          )}
-          {dateFilterHeader.length > 0 && (
-            <MenuWrapper disp="flex" flexDir="row" gap={8}>
-              {dateFilterHeader.map((item, index) => (
-                <RangeDateInput key={index} label={item ? (item.charAt(0).toUpperCase() + item.slice(1)).match(/[A-Z][a-z]+/g)?.join(" ") : ""} />
-              ))}
-            </MenuWrapper>
-          )}
+          <MenuWrapper disp="inline-flex" gap={8}>
+            {optionsFilterHeader.length > 0 && (
+              <MenuWrapper disp="flex" flexDir="row" gap={8}>
+                {optionsFilterHeader.map((item, index) => (
+                  <CheckListInput
+                    key={index}
+                    label={item.name ? (item.name.charAt(0).toUpperCase() + item.name.slice(1)).match(/[A-Z][a-z]+/g)?.join(" ") : ""}
+                    name={item.name}
+                    options={item.value?.map((ini) => ({ id: ini, desc: ini }))}
+                    width={220}
+                    customValue={item.name && filterForm[item.name] ? filterForm[item.name].map((val: any) => val.desc) : [""]}
+                    CustomHandler={OptionsFilterHandler}
+                  />
+                ))}
+              </MenuWrapper>
+            )}
+            {booleanFilterHeader.length > 0 && (
+              <MenuWrapper disp="flex" flexDir="row" gap={8}>
+                {booleanFilterHeader.map((item, index) => (
+                  <CheckListInput
+                    key={index}
+                    label={item ? (item.charAt(0).toUpperCase() + item.slice(1)).match(/[A-Z][a-z]+/g)?.join(" ") : ""}
+                    name={item}
+                    width={150}
+                    options={[
+                      { id: "TRUE", desc: "TRUE" },
+                      { id: "FALSE", desc: "FALSE" },
+                    ]}
+                    customValue={item && filterForm[item] ? filterForm[item].data.map((val: any) => val.desc) : [""]}
+                    CustomHandler={BooleanFilterHandler}
+                  />
+                ))}
+              </MenuWrapper>
+            )}
+            {dateFilterHeader.length > 0 && (
+              <MenuWrapper disp="flex" flexDir="row" gap={8}>
+                {dateFilterHeader.map((item, index) => (
+                  <RangeDateInput key={index} label={item ? (item.charAt(0).toUpperCase() + item.slice(1)).match(/[A-Z][a-z]+/g)?.join(" ") : ""} />
+                ))}
+              </MenuWrapper>
+            )}
 
-          <MenuWrapper>
-            <ResetButton onClick={FilterAction} value="reset">
-              clear
-            </ResetButton>
-          </MenuWrapper>
-          <MenuWrapper>
-            <ResetButton onClick={FilterAction} value="submit">
-              submit
-            </ResetButton>
+            <MenuWrapper>
+              <ResetButton onClick={FilterAction} value="reset">
+                clear
+              </ResetButton>
+            </MenuWrapper>
+            <MenuWrapper>
+              <ResetButton onClick={FilterAction} value="submit">
+                submit
+              </ResetButton>
+            </MenuWrapper>
           </MenuWrapper>
         </ToolbarWrapper>
       )}
